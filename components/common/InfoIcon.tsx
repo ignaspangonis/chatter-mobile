@@ -1,11 +1,11 @@
 import React, { ForwardedRef, forwardRef } from 'react'
-import { Pressable, PressableProps, useColorScheme, View } from 'react-native'
+import { Pressable, PressableProps, View } from 'react-native'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 
-import Colors from '../../constants/Colors'
+import useColors from '../../hooks/useColors'
 
 const InfoIcon = forwardRef((props: PressableProps, ref: ForwardedRef<View> | undefined) => {
-  const colorScheme = useColorScheme()
+  const colors = useColors()
 
   return (
     <Pressable ref={ref} {...props}>
@@ -13,7 +13,7 @@ const InfoIcon = forwardRef((props: PressableProps, ref: ForwardedRef<View> | un
         <FontAwesome
           name="info-circle"
           size={25}
-          color={Colors[colorScheme ?? 'light'].text}
+          color={colors.text}
           style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
         />
       )}
