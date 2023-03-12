@@ -1,6 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Link, Tabs } from 'expo-router'
-import { Pressable, useColorScheme } from 'react-native'
+import { useColorScheme } from 'react-native'
 import InfoIcon from '../../components/common/InfoIcon'
 
 import Colors from '../../constants/Colors'

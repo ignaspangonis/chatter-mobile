@@ -1,11 +1,12 @@
 module.exports = {
-  plugins: ["react", "react-native"],
+  plugins: ['react', 'react-native'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
   },
   env: {
-    "react-native/react-native": true,
+    'react-native/react-native': true,
   },
-};
+  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react-native/all'],
+}
