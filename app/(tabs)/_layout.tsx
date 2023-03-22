@@ -14,8 +14,14 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />
 }
 
+export const unstable_settings = {
+  initialRouteName: '(chat)',
+}
+
 export default function TabLayout() {
   const colors = useColors()
+
+  console.log('TabLayout')
 
   return (
     <Tabs
@@ -24,9 +30,9 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(chat)"
         options={{
-          title: 'Chatter',
+          title: 'Chat',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -38,7 +44,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Profile',
+          title: 'TODO',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
