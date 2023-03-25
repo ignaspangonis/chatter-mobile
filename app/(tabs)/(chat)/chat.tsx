@@ -1,22 +1,28 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
 import { View, Text, Button, FlatList } from 'react-native'
 
 import { Route } from '../../../constants/routes'
 import useAdminActions from '../../../hooks/useAdminActions'
 import SendMessage from '../../../components/SendMessage'
-import ChatContext from '../../../containers/ChatProvider/ChatContext'
 import useChat from '../../../hooks/useChat'
 
 export default function ChatScreen() {
-  const { connection, users, roomName: contextRoomName } = useContext(ChatContext)
-  const { messages, joinRoom, leaveRoom, sendMessage } = useChat()
+  const {
+    messages,
+    joinRoom,
+    leaveRoom,
+    sendMessage,
+    users,
+    roomName: contextRoomName,
+    connection,
+  } = useChat()
   const {
     uiState: deleteRoomUiState,
     handleDeleteRoom,
     handleMakeAdmin,
     isAdmin,
-  } = useAdminActions(leaveRoom)
+  } = useAdminActions(leaveRoom, contextRoomName)
 
   const router = useRouter()
 

@@ -1,12 +1,10 @@
 import { useRouter, useSearchParams } from 'expo-router'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 
-import ChatContext from '../containers/ChatProvider/ChatContext'
 import { UiState } from '../types/ui'
 import { deleteMessageRoom } from '../data/api'
 
-const useAdminActions = (handleLeaveRoom: () => void) => {
-  const { roomName } = useContext(ChatContext)
+const useAdminActions = (handleLeaveRoom: () => void, roomName: string | null) => {
   const [uiState, setUiState] = useState<UiState>('idle')
 
   const { setParams } = useRouter()

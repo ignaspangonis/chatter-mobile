@@ -1,15 +1,17 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { MessageModel } from '../types/models'
 import { ExtendedMessageDto } from '../types/dtos'
 import { ChatHubMethod, CHAT_API_URL } from '../constants/connection'
-import ChatContext from '../containers/ChatProvider/ChatContext'
+
 import { transformMessage, transformMessages } from '../data/transformers/message'
 
 const useChat = () => {
   const [messages, setMessages] = useState<MessageModel[]>([])
-  const { connection, setConnection, setRoomName, setUsers } = useContext(ChatContext)
+  const [connection, setConnection] = useState<HubConnection | null>(null)
+  const [roomName, setRoomName] = useState<string | null>(null)
+  const [users, setUsers] = useState<string[]>([])
 
   async function sendMessage(message: string) {
     if (!connection) return
@@ -85,17 +87,13 @@ const useChat = () => {
         alert(`Failed to join room. ${toFormattedString(error)}`)
       }
     },
-    [
-      handleReceiveMessageHistory,
-      handleConnectionClosed,
-      handleGetMessage,
-      setConnection,
-      setRoomName,
-      setUsers,
-    ],
+    [handleReceiveMessageHistory, handleConnectionClosed, handleGetMessage],
   )
 
   return {
+    users,
+    roomName,
+    connection,
     messages,
     joinRoom,
     leaveRoom,

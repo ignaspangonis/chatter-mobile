@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router'
 import React from 'react'
 
-import ChatProvider from '../../../containers/ChatProvider/ChatProvider'
-
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -15,11 +13,9 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   return (
-    <ChatProvider>
-      <Stack>
-        <Stack.Screen name="lobby" options={{ headerShown: false }} />
-        <Stack.Screen name="chat" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ChatProvider>
+    <Stack>
+      <Stack.Screen name="lobby" options={{ headerShown: false }} />
+      <Stack.Screen name="chat" options={{ presentation: 'modal' }} />
+    </Stack>
   )
 }
