@@ -21,7 +21,10 @@ export default function LobbyScreen() {
   console.log(userName, roomName)
 
   const handleSubmit = () => {
-    if (!userName || !roomName) return
+    if (!userName || !roomName) {
+      alert('Please enter a username and room name')
+      return
+    }
 
     /* TODO implement <Weather /> */
     router.push({
@@ -54,18 +57,9 @@ export default function LobbyScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
     gap: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    justifyContent: 'center',
   },
 })
