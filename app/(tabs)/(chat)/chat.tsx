@@ -1,72 +1,47 @@
-import React, { useContext, useEffect, useRef } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
 import { View, Text, Button, FlatList } from 'react-native'
 
 import { Route } from '../../../constants/routes'
-import { MessageModel } from '../../../types/models'
 import useAdminActions from '../../../hooks/useAdminActions'
 import SendMessage from '../../../components/SendMessage'
 import ChatContext from '../../../containers/ChatProvider/ChatContext'
 import useChat from '../../../hooks/useChat'
 
-type Props = {
-  messages: MessageModel[]
-  onLeaveRoom: () => void
-  onSendMessage: (message: string) => void
-}
-
 export default function ChatScreen() {
-  const messageRef = useRef<View>(null)
   const { connection, users, roomName: contextRoomName } = useContext(ChatContext)
-  const {
-    messages,
-    handleJoinRoom,
-    handleLeaveRoom: onLeaveRoom,
-    handleSendMessage: onSendMessage,
-  } = useChat()
+  const { messages, joinRoom, leaveRoom, sendMessage } = useChat()
   const {
     uiState: deleteRoomUiState,
     handleDeleteRoom,
     handleMakeAdmin,
     isAdmin,
-  } = useAdminActions(onLeaveRoom)
+  } = useAdminActions(leaveRoom)
 
-  const { push } = useRouter()
+  const router = useRouter()
 
   const { userName, roomName } = useSearchParams()
 
   useEffect(() => {
     if (contextRoomName && !connection) {
       alert('Connection was not found!')
-      push(Route.Lobby)
+      router.push(Route.Lobby)
     }
-  }, [contextRoomName, connection, push])
+  }, [contextRoomName, connection, router])
 
   useEffect(() => {
     if (!userName || !roomName || connection || contextRoomName) {
-      // alert('Username or room name was not found!')
-      // onLeaveRoom()
-      // push(Route.Lobby)
       return
     }
 
-    handleJoinRoom(String(userName), String(roomName))
+    joinRoom(String(userName), String(roomName))
 
     return () => {
-      onLeaveRoom()
+      leaveRoom()
     }
-  }, [handleJoinRoom, roomName, userName])
+  }, [joinRoom, roomName, userName, leaveRoom, connection, contextRoomName])
 
-  useEffect(() => {
-    if (!messageRef.current) return
-
-    // TODO scroll to bottom
-    // messageRef.current.scrollTo({
-    //   top: messageRef.current.scrollHeight - messageRef.current.clientHeight,
-    //   behavior: 'smooth',
-    //   left: 0,
-    // })
-  }, [messages])
+  // TODO scroll to new message
 
   const renderAdminAction = () => {
     if (isAdmin)
@@ -81,12 +56,18 @@ export default function ChatScreen() {
     return <Button onPress={handleMakeAdmin} title="Make me admin" />
   }
 
+  function handleLeaveRoomButtonClick() {
+    leaveRoom()
+
+    router.push(Route.Lobby)
+  }
+
   return (
     <View>
       <View>
         <Text>Room: {roomName}</Text>
         {renderAdminAction()}
-        <Button onPress={onLeaveRoom} title="Leave Room" />
+        <Button onPress={handleLeaveRoomButtonClick} title="Leave Room" />
       </View>
 
       <View>
@@ -99,7 +80,7 @@ export default function ChatScreen() {
               <Text>{user.item}</Text>
             </View>
           )}
-          keyExtractor={(user, index) => index.toString()}
+          keyExtractor={(user, index) => String(index)}
         />
 
         <View>
@@ -115,7 +96,7 @@ export default function ChatScreen() {
             inverted
             keyExtractor={message => message.id}
           />
-          <SendMessage onSubmit={onSendMessage} />
+          <SendMessage onSubmit={sendMessage} />
         </View>
       </View>
     </View>
