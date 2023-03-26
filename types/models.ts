@@ -1,5 +1,11 @@
 export type MessageModel = {
-  id: string
+  id: {
+    creationTime: string
+    increment: number
+    machine: number
+    pid: number
+    timestamp: number
+  }
   userName: string
   content: string
   createdAt: string

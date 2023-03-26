@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { MessageModel } from '../types/models'
 import { ExtendedMessageDto } from '../types/dtos'
@@ -7,10 +7,9 @@ import { ChatHubMethod, CHAT_API_URL } from '../constants/connection'
 
 import { transformMessage, transformMessages } from '../data/transformers/message'
 
-const useChat = () => {
+const useChat = (userName: string | null, roomName: string | null) => {
   const [messages, setMessages] = useState<MessageModel[]>([])
-  const [connection, setConnection] = useState<HubConnection | null>(null)
-  const [roomName, setRoomName] = useState<string | null>(null)
+  const [connection, setConnection] = useState<HubConnection>()
   const [users, setUsers] = useState<string[]>([])
 
   async function sendMessage(message: string) {
@@ -24,32 +23,33 @@ const useChat = () => {
   }
 
   const handleConnectionClosed = useCallback(() => {
-    setConnection(null)
-    setRoomName(null)
+    setConnection(undefined)
     setUsers([])
     setMessages([])
-  }, [setConnection, setRoomName, setUsers, setMessages])
+  }, [])
 
-  async function leaveRoom() {
+  const leaveRoom = useCallback(async () => {
     if (!connection) return
 
     try {
       await connection.stop()
-
-      handleConnectionClosed()
     } catch (error) {
       alert(`Failed to leave room. ${toFormattedString(error)}`)
     }
-  }
+
+    handleConnectionClosed()
+  }, [handleConnectionClosed, connection])
 
   const handleGetMessage = useCallback((message: ExtendedMessageDto) => {
     const transformedMessage = transformMessage(message)
 
-    setMessages(messages => [transformedMessage, ...messages])
+    setMessages(messages => [...messages, transformedMessage])
   }, [])
 
   const handleReceiveMessageHistory = useCallback(
     (connection: HubConnection) => (messages: ExtendedMessageDto[]) => {
+      console.log('received message history', messages)
+
       const transformedMessages = transformMessages(messages)
 
       setMessages(messages => [...messages, ...transformedMessages])
@@ -59,8 +59,8 @@ const useChat = () => {
     [],
   )
 
-  const joinRoom = useCallback(
-    async (userName: string, roomName: string) => {
+  const createConnection = useCallback(
+    (userName: string, roomName: string) => {
       try {
         const newConnection = new HubConnectionBuilder()
           .withUrl(CHAT_API_URL)
@@ -75,14 +75,14 @@ const useChat = () => {
         newConnection.on(ChatHubMethod.UsersInRoom, (users: string[]) => setUsers(users))
         newConnection.onclose(handleConnectionClosed)
 
-        await newConnection.start()
-        await newConnection.invoke(ChatHubMethod.JoinRoom, {
-          UserName: userName,
-          RoomName: roomName,
-        })
+        console.log(
+          'joining room',
+          roomName,
+          userName,
+          `connection id: ${newConnection.connectionId}`,
+        )
 
-        setConnection(newConnection)
-        setRoomName(roomName)
+        return newConnection
       } catch (error) {
         alert(`Failed to join room. ${toFormattedString(error)}`)
       }
@@ -90,12 +90,36 @@ const useChat = () => {
     [handleReceiveMessageHistory, handleConnectionClosed, handleGetMessage],
   )
 
+  useEffect(() => {
+    // TODO anksciau buvo if connection, bet dabar nebe
+    if (!userName || !roomName) {
+      return
+    }
+
+    const newConnection = createConnection(String(userName), String(roomName))
+
+    newConnection?.start().then(() =>
+      newConnection.invoke(ChatHubMethod.JoinRoom, {
+        UserName: userName,
+        RoomName: roomName,
+      }),
+    )
+
+    setConnection(newConnection)
+
+    return () => {
+      try {
+        newConnection?.stop()
+      } catch (error) {
+        alert(`Failed to stop connection. ${toFormattedString(error)}`)
+      }
+    }
+  }, [roomName, userName, createConnection, leaveRoom])
+
   return {
     users,
-    roomName,
-    connection,
     messages,
-    joinRoom,
+    joinRoom: createConnection,
     leaveRoom,
     sendMessage,
   }

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { UiState } from '../types/ui'
 import { deleteMessageRoom } from '../data/api'
 
-const useAdminActions = (handleLeaveRoom: () => void, roomName: string | null) => {
+const useAdminActions = (leaveRoom: () => void, roomName: string | null) => {
   const [uiState, setUiState] = useState<UiState>('idle')
 
   const { setParams } = useRouter()
@@ -27,7 +27,7 @@ const useAdminActions = (handleLeaveRoom: () => void, roomName: string | null) =
     setUiState('idle')
 
     alert('Room deleted successfully')
-    handleLeaveRoom()
+    leaveRoom()
   }
 
   const handleMakeAdmin = () => setParams({ admin: 'true' })

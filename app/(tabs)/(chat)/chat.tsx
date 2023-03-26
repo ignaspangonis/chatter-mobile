@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
 import { View, Text, Button, FlatList } from 'react-native'
 
@@ -8,44 +8,31 @@ import SendMessage from '../../../components/SendMessage'
 import useChat from '../../../hooks/useChat'
 
 export default function ChatScreen() {
-  const {
-    messages,
-    joinRoom,
-    leaveRoom,
-    sendMessage,
-    users,
-    roomName: contextRoomName,
-    connection,
-  } = useChat()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const [userName, roomName] = useMemo(() => {
+    const { userName, roomName } = searchParams
+
+    if (!userName || !roomName) return [null, null]
+
+    return [String(userName), String(roomName)]
+  }, [searchParams])
+
+  const { messages, users, leaveRoom, sendMessage } = useChat(userName, roomName)
+
+  function handleLeaveRoom() {
+    leaveRoom()
+
+    router.push(Route.Lobby)
+  }
+
   const {
     uiState: deleteRoomUiState,
     handleDeleteRoom,
     handleMakeAdmin,
     isAdmin,
-  } = useAdminActions(leaveRoom, contextRoomName)
-
-  const router = useRouter()
-
-  const { userName, roomName } = useSearchParams()
-
-  useEffect(() => {
-    if (contextRoomName && !connection) {
-      alert('Connection was not found!')
-      router.push(Route.Lobby)
-    }
-  }, [contextRoomName, connection, router])
-
-  useEffect(() => {
-    if (!userName || !roomName || connection || contextRoomName) {
-      return
-    }
-
-    joinRoom(String(userName), String(roomName))
-
-    return () => {
-      leaveRoom()
-    }
-  }, [joinRoom, roomName, userName, leaveRoom, connection, contextRoomName])
+  } = useAdminActions(handleLeaveRoom, roomName)
 
   // TODO scroll to new message
 
@@ -62,18 +49,16 @@ export default function ChatScreen() {
     return <Button onPress={handleMakeAdmin} title="Make me admin" />
   }
 
-  function handleLeaveRoomButtonClick() {
-    leaveRoom()
-
-    router.push(Route.Lobby)
-  }
+  useEffect(() => {
+    console.log(userName, roomName)
+  }, [userName, roomName])
 
   return (
     <View>
       <View>
         <Text>Room: {roomName}</Text>
         {renderAdminAction()}
-        <Button onPress={handleLeaveRoomButtonClick} title="Leave Room" />
+        <Button onPress={handleLeaveRoom} title="Leave Room" />
       </View>
 
       <View>
@@ -99,8 +84,7 @@ export default function ChatScreen() {
                 <Text>{message.content}</Text>
               </View>
             )}
-            inverted
-            keyExtractor={message => message.id}
+            keyExtractor={message => String(message.id.timestamp)}
           />
           <SendMessage onSubmit={sendMessage} />
         </View>
