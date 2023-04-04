@@ -24,7 +24,6 @@ export default function LobbyScreen() {
       return
     }
 
-    /* TODO implement <Weather /> */
     router.push({
       pathname: Route.Chat,
       params: {
@@ -34,6 +33,7 @@ export default function LobbyScreen() {
     })
   }
 
+  /* TODO implement <Weather /> */
   return (
     <SafeAreaView style={styles.container}>
       <View>
