@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { MessageModel } from '../types/models'
 import { ExtendedMessageDto } from '../types/dtos'
 import { ChatHubMethod, CHAT_API_URL } from '../constants/connection'
-
 import { transformMessage, transformMessages } from '../data/transformers/message'
 
 const useChat = (userName: string | null, roomName: string | null) => {
