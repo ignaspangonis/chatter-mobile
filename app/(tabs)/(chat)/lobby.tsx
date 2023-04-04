@@ -18,8 +18,6 @@ export default function LobbyScreen() {
     setRoomName(text || '')
   }
 
-  console.log(userName, roomName)
-
   const handleSubmit = () => {
     if (!userName || !roomName) {
       alert('Please enter a username and room name')

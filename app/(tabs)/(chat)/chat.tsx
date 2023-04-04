@@ -49,10 +49,6 @@ export default function ChatScreen() {
     return <Button onPress={handleMakeAdmin} title="Make me admin" />
   }
 
-  useEffect(() => {
-    console.log(userName, roomName)
-  }, [userName, roomName])
-
   return (
     <View>
       <View>

@@ -1,5 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Link, Tabs } from 'expo-router'
+import React from 'react'
 
 import InfoIcon from '../../components/common/InfoIcon'
 import useColors from '../../hooks/useColors'
@@ -20,8 +21,6 @@ export const unstable_settings = {
 
 export default function TabLayout() {
   const colors = useColors()
-
-  console.log('TabLayout')
 
   return (
     <Tabs
