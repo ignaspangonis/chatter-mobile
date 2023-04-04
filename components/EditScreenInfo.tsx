@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet } from 'react-native'
 
-import Colors from '../constants/Colors'
+import Colors from '../constants/color'
 import { ExternalLink } from './common/ExternalLink'
 import { MonoText } from './StyledText'
 import { Text, View } from './Themed'

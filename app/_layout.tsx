@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 import { useColorScheme } from 'react-native'
-import Colors from '../constants/Colors'
+import Colors from '../constants/color'
 import useColors from '../hooks/useColors'
 
 export {
