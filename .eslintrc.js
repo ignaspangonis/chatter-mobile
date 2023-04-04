@@ -17,9 +17,10 @@ module.exports = {
   rules: {
     'react-hooks/rules-of-hooks': 'error', // Checks rules of Hooks
     'react-hooks/exhaustive-deps': 'warn', // Checks effect dependencies
+    '@typescript-eslint/no-empty-function': 'off',
     // TODO: enable after https://github.com/import-js/eslint-plugin-import/issues/2348 performance downgrade is fixed
     'import/no-cycle': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
+    'react-native/no-inline-styles': 'off',
   },
   globals: {
     fetch: false,

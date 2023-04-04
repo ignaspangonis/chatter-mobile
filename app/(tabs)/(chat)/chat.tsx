@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
 import { View, Text, Button, FlatList } from 'react-native'
 
