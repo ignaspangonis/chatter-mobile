@@ -11,7 +11,7 @@ const useAdminActions = (leaveRoom: () => void, roomName: string | null) => {
   const { admin } = useSearchParams()
   const isAdmin = admin === 'true'
 
-  const handleDeleteRoom = async () => {
+  const deleteRoom = async () => {
     if (!roomName) return
 
     setUiState('loading')
@@ -34,7 +34,7 @@ const useAdminActions = (leaveRoom: () => void, roomName: string | null) => {
 
   return {
     uiState,
-    handleDeleteRoom,
+    deleteRoom,
     handleMakeAdmin,
     isAdmin,
   }

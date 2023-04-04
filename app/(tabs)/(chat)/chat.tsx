@@ -29,7 +29,7 @@ export default function ChatScreen() {
 
   const {
     uiState: deleteRoomUiState,
-    handleDeleteRoom,
+    deleteRoom,
     handleMakeAdmin,
     isAdmin,
   } = useAdminActions(handleLeaveRoom, roomName)
@@ -40,7 +40,7 @@ export default function ChatScreen() {
     if (isAdmin)
       return (
         <Button
-          onPress={handleDeleteRoom}
+          onPress={deleteRoom}
           disabled={deleteRoomUiState === 'loading'}
           title="Delete room"
         />
@@ -84,7 +84,7 @@ export default function ChatScreen() {
                 <Text>{message.content}</Text>
               </View>
             )}
-            keyExtractor={message => String(message.id.timestamp)}
+            keyExtractor={(message, index) => String(message.id.timestamp * index)}
           />
           <SendMessage onSubmit={sendMessage} />
         </View>

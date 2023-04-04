@@ -12,16 +12,6 @@ const useChat = (userName: string | null, roomName: string | null) => {
   const [connection, setConnection] = useState<HubConnection>()
   const [users, setUsers] = useState<string[]>([])
 
-  async function sendMessage(message: string) {
-    if (!connection) return
-
-    try {
-      await connection.invoke(ChatHubMethod.SendMessage, message)
-    } catch (error) {
-      alert(`Failed to send message. ${toFormattedString(error)}`)
-    }
-  }
-
   const handleConnectionClosed = useCallback(() => {
     setConnection(undefined)
     setUsers([])
@@ -34,71 +24,45 @@ const useChat = (userName: string | null, roomName: string | null) => {
     try {
       await connection.stop()
     } catch (error) {
-      alert(`Failed to leave room. ${toFormattedString(error)}`)
+      console.error('Failed to leave room', error)
     }
 
     handleConnectionClosed()
   }, [handleConnectionClosed, connection])
 
-  const handleGetMessage = useCallback((message: ExtendedMessageDto) => {
-    const transformedMessage = transformMessage(message)
+  const createConnection = useCallback(() => {
+    try {
+      const newConnection = new HubConnectionBuilder()
+        .withUrl(CHAT_API_URL)
+        .configureLogging(LogLevel.Information)
+        .build()
 
-    setMessages(messages => [...messages, transformedMessage])
-  }, [])
+      newConnection.on(ChatHubMethod.ReceiveMessageHistory, (newMessages: ExtendedMessageDto[]) => {
+        setMessages(transformMessages(newMessages))
+      })
+      newConnection.on(ChatHubMethod.ReceiveMessage, (message: ExtendedMessageDto) =>
+        setMessages(previous => [...previous, transformMessage(message)]),
+      )
+      newConnection.on(ChatHubMethod.UsersInRoom, (users: string[]) => setUsers(users))
+      newConnection.onclose(handleConnectionClosed)
 
-  const handleReceiveMessageHistory = useCallback(
-    (connection: HubConnection) => (messages: ExtendedMessageDto[]) => {
-      console.log('received message history', messages)
-
-      const transformedMessages = transformMessages(messages)
-
-      setMessages(messages => [...messages, ...transformedMessages])
-
-      connection.off(ChatHubMethod.ReceiveMessageHistory)
-    },
-    [],
-  )
-
-  const createConnection = useCallback(
-    (userName: string, roomName: string) => {
-      try {
-        const newConnection = new HubConnectionBuilder()
-          .withUrl(CHAT_API_URL)
-          .configureLogging(LogLevel.Information)
-          .build()
-
-        newConnection.on(
-          ChatHubMethod.ReceiveMessageHistory,
-          handleReceiveMessageHistory(newConnection),
-        )
-        newConnection.on(ChatHubMethod.ReceiveMessage, handleGetMessage)
-        newConnection.on(ChatHubMethod.UsersInRoom, (users: string[]) => setUsers(users))
-        newConnection.onclose(handleConnectionClosed)
-
-        console.log(
-          'joining room',
-          roomName,
-          userName,
-          `connection id: ${newConnection.connectionId}`,
-        )
-
-        return newConnection
-      } catch (error) {
-        alert(`Failed to join room. ${toFormattedString(error)}`)
-      }
-    },
-    [handleReceiveMessageHistory, handleConnectionClosed, handleGetMessage],
-  )
+      return newConnection
+    } catch (error) {
+      console.error('Failed to create a connection', error)
+    }
+  }, [handleConnectionClosed])
 
   useEffect(() => {
-    // TODO anksciau buvo if connection, bet dabar nebe
-    if (!userName || !roomName) {
+    if (!userName || !roomName) return
+
+    const newConnection = createConnection()
+
+    if (!newConnection) {
+      console.error('Failed to create a connection')
       return
     }
 
-    const newConnection = createConnection(String(userName), String(roomName))
-
-    newConnection?.start().then(() =>
+    newConnection.start().then(() =>
       newConnection.invoke(ChatHubMethod.JoinRoom, {
         UserName: userName,
         RoomName: roomName,
@@ -108,18 +72,26 @@ const useChat = (userName: string | null, roomName: string | null) => {
     setConnection(newConnection)
 
     return () => {
-      try {
-        newConnection?.stop()
-      } catch (error) {
-        alert(`Failed to stop connection. ${toFormattedString(error)}`)
-      }
+      newConnection.stop().catch(error => console.error(error, 'Failed to stop connection'))
     }
-  }, [roomName, userName, createConnection, leaveRoom])
+  }, [roomName, userName, createConnection])
+
+  const sendMessage = useCallback(
+    (message: string) => async () => {
+      if (!connection) return
+
+      try {
+        await connection.invoke(ChatHubMethod.SendMessage, message)
+      } catch (error) {
+        alert(`Failed to send message. ${toFormattedString(error)}`)
+      }
+    },
+    [connection],
+  )
 
   return {
     users,
     messages,
-    joinRoom: createConnection,
     leaveRoom,
     sendMessage,
   }
