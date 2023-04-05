@@ -56,10 +56,7 @@ const useChat = (userName: string | null, roomName: string | null) => {
 
     const newConnection = createConnection()
 
-    if (!newConnection) {
-      console.error('Failed to create a connection')
-      return
-    }
+    if (!newConnection) return
 
     newConnection.start().then(() =>
       newConnection.invoke(ChatHubMethod.JoinRoom, {
@@ -71,7 +68,7 @@ const useChat = (userName: string | null, roomName: string | null) => {
     setConnection(newConnection)
 
     return () => {
-      newConnection.stop().catch(error => console.error(error, 'Failed to stop connection'))
+      newConnection.stop().catch(error => console.error('Failed to stop connection', error))
     }
   }, [roomName, userName, createConnection])
 
