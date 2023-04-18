@@ -5,7 +5,13 @@ export type WeatherDto = {
 }
 
 export type ExtendedMessageDto = {
-  id: string
+  id: {
+    creationTime: string
+    increment: number
+    machine: number
+    pid: number
+    timestamp: number
+  }
   author: string
   content: string
   createdAt: string
