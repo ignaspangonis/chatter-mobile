@@ -73,7 +73,7 @@ const useChat = (userName: string | null, roomName: string | null) => {
   }, [roomName, userName, createConnection])
 
   const sendMessage = useCallback(
-    (message: string) => async () => {
+    async (message: string) => {
       if (!connection) return
 
       try {
