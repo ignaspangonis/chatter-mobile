@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
-import { View, Text, Button, FlatList } from 'react-native'
+import { View, Text, Button, FlatList, StyleSheet } from 'react-native'
 
 import { Route } from '../../../constants/routes'
 import useAdminActions from '../../../hooks/useAdminActions'
@@ -50,7 +50,7 @@ export default function ChatScreen() {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <View>
         <Text>Room: {roomName}</Text>
         {renderAdminAction()}
@@ -88,3 +88,9 @@ export default function ChatScreen() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+})
