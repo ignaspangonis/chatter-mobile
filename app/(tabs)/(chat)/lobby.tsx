@@ -14,6 +14,9 @@ import {
 
 import { Route } from '../../../constants/routes'
 
+// TODO fix this, works on runtime
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import backImage from '../../../assets/images/backImage.png'
 
 export default function LobbyScreen() {
