@@ -1,9 +1,8 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import React, { useEffect } from 'react'
-import { useColorScheme } from 'react-native'
 
 import useColors from '../hooks/useColors'
 
@@ -18,7 +17,6 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
   const colors = useColors()
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -35,7 +33,8 @@ export default function RootLayout() {
       {/* Keep the splash screen open until the assets have loaded. In the future, we should just support async font loading with a native version of font-display. */}
       {!loaded && <SplashScreen />}
       {loaded && (
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        // TODO: use a custom theme
+        <ThemeProvider value={DefaultTheme}>
           <Stack
             screenOptions={{
               headerStyle: {
