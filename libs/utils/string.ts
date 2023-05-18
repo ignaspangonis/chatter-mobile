@@ -1,4 +1,4 @@
-const toFormattedString = (value: unknown) => {
+export const toFormattedString = (value: unknown) => {
   if (typeof value === 'object') {
     return JSON.stringify(value)
   }
