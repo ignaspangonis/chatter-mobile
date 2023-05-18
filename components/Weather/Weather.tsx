@@ -41,8 +41,6 @@ export default function Weather() {
     return `It's ${weather.summary} today - temperature is ${weather.temperature}°C`
   }
 
-  console.log('renderWeatherText', renderWeatherText())
-
   return (
     <Text
       style={{

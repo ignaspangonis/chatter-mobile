@@ -75,7 +75,6 @@ export default function LobbyScreen() {
           onChangeText={handleRoomNameChange}
           autoCapitalize="none"
           autoCorrect={false}
-          secureTextEntry={true}
         />
         <TouchableOpacity
           style={styles.button}
