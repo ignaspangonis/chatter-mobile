@@ -18,6 +18,7 @@ import { Route } from '../../../constants/routes'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import backImage from '../../../assets/images/backImage.png'
+import Weather from '../../../components/Weather'
 
 export default function LobbyScreen() {
   const [userName, setUserName] = useState('')
@@ -57,6 +58,7 @@ export default function LobbyScreen() {
       <View style={styles.whiteSheet} />
       <SafeAreaView style={styles.form}>
         <Text style={styles.title}>Chatter</Text>
+        <Weather />
         <TextInput
           style={styles.input}
           value={userName}
