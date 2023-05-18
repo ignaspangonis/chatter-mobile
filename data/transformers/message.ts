@@ -2,11 +2,15 @@ import { ExtendedMessageDto } from '../../types/dtos'
 import { MessageModel } from '../../types/models'
 
 export const transformMessage = (dto: ExtendedMessageDto): MessageModel => ({
-  id: dto.id,
-  userName: dto.author,
-  content: dto.content,
-  createdAt: dto.createdAt,
-  roomName: dto.roomName,
+  _id: dto.id.timestamp * dto.id.increment,
+  user: {
+    _id: dto.author,
+    name: dto.author,
+    avatar: 'https://placeimg.com/140/140/any',
+  },
+  text: dto.content,
+  createdAt: new Date(dto.createdAt),
+  system: dto.author === 'ChatBot',
 })
 
 export const transformMessages = (messages: ExtendedMessageDto[]): MessageModel[] =>

@@ -41,7 +41,7 @@ const useChat = (userName: string | null, roomName: string | null) => {
         setMessages(transformMessages(newMessages))
       })
       newConnection.on(ChatHubMethod.ReceiveMessage, (message: ExtendedMessageDto) =>
-        setMessages(previous => [...previous, transformMessage(message)]),
+        setMessages(previous => [transformMessage(message), ...previous]),
       )
       newConnection.on(ChatHubMethod.UsersInRoom, (users: string[]) => setUsers(users))
       newConnection.onclose(handleConnectionClosed)

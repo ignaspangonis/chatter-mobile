@@ -1,10 +1,11 @@
+/* eslint-disable react-native/no-color-literals */
 import React, { useMemo } from 'react'
 import { useRouter, useSearchParams } from 'expo-router'
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native'
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native'
+import { GiftedChat } from 'react-native-gifted-chat'
 
 import { Route } from '../../../constants/routes'
 import useAdminActions from '../../../hooks/useAdminActions'
-import SendMessage from '../../../components/SendMessage'
 import useChat from '../../../hooks/useChat'
 
 export default function ChatScreen() {
@@ -20,6 +21,10 @@ export default function ChatScreen() {
   }, [searchParams])
 
   const { messages, users, leaveRoom, sendMessage } = useChat(userName, roomName)
+
+  const usersText = useMemo(() => {
+    return users.join(', ')
+  }, [users])
 
   function handleLeaveRoom() {
     leaveRoom()
@@ -39,58 +44,82 @@ export default function ChatScreen() {
   const renderAdminAction = () => {
     if (isAdmin)
       return (
-        <Button
-          onPress={deleteRoom}
+        <TouchableOpacity
+          style={styles.button}
           disabled={deleteRoomUiState === 'loading'}
-          title="Delete room"
-        />
+          activeOpacity={0.6}
+          onPress={deleteRoom}
+        >
+          <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 16 }}>Delete messages</Text>
+        </TouchableOpacity>
       )
 
-    return <Button onPress={handleMakeAdmin} title="Make me admin" />
+    return (
+      <TouchableOpacity style={styles.button} onPress={handleMakeAdmin} activeOpacity={0.6}>
+        <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 16 }}>Make me admin</Text>
+      </TouchableOpacity>
+    )
   }
 
+  if (!userName || !roomName)
+    return (
+      <View>
+        <Text>Invalid room</Text>
+        <Button onPress={() => router.push(Route.Lobby)} title="Back to lobby" />
+      </View>
+    )
+
   return (
-    <View style={styles.container}>
-      <View>
-        <Text>Room: {roomName}</Text>
-        {renderAdminAction()}
-        <Button onPress={handleLeaveRoom} title="Leave Room" />
-      </View>
-
-      <View>
-        <Text>Connected users</Text>
-        <FlatList
-          data={users}
-          alwaysBounceVertical={false}
-          renderItem={user => (
-            <View>
-              <Text>{user.item}</Text>
-            </View>
-          )}
-          keyExtractor={(user, index) => String(index)}
-        />
-
-        <View>
-          <FlatList
-            data={messages}
-            alwaysBounceVertical={true}
-            renderItem={({ item: message }) => (
-              <View>
-                <Text>{message.userName}</Text>
-                <Text>{message.content}</Text>
-              </View>
-            )}
-            keyExtractor={(message, index) => String(message.id.timestamp * index)}
-          />
-          <SendMessage onSubmit={sendMessage} />
+    <GiftedChat
+      messages={messages}
+      user={{
+        _id: userName,
+        name: userName,
+        avatar: 'https://placeimg.com/140/140/any',
+      }}
+      showAvatarForEveryMessage={false}
+      showUserAvatar={false}
+      onSend={messages => messages.forEach(message => sendMessage(message.text))}
+      messagesContainerStyle={{
+        backgroundColor: '#fff',
+      }}
+      renderUsernameOnMessage
+      renderChatEmpty={() => <Text>Loading...</Text>}
+      renderFooter={() => (
+        <View style={styles.chatFooter}>
+          <Text style={styles.text}>Users in room: {usersText}.</Text>
+          {renderAdminAction()}
         </View>
-      </View>
-    </View>
+      )}
+    />
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
+  button: {
+    alignItems: 'center',
+    backgroundColor: '#555',
+    borderRadius: 8,
+    height: 32,
+    justifyContent: 'center',
+    marginLeft: 'auto',
+    paddingBottom: 16,
+    paddingLeft: 24,
+    paddingRight: 24,
+    paddingTop: 16,
+  },
+  chatFooter: {
+    alignItems: 'flex-end',
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    flexGrow: 1,
+    gap: 4,
+    padding: 10,
+  },
+  text: {
+    alignSelf: 'center',
+    color: '#555',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 })

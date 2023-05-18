@@ -1,13 +1,28 @@
 export type MessageModel = {
-  id: {
-    creationTime: string
-    increment: number
-    machine: number
-    pid: number
-    timestamp: number
+  _id: number
+  user: {
+    _id: string
+    name: string
+    avatar?: string
   }
-  userName: string
-  content: string
-  createdAt: string
-  roomName: string
+  text: string
+  createdAt: Date
+  system?: boolean
 }
+// interface IMessage {
+//   _id: string | number
+//   text: string
+//   createdAt: Date | number
+//   user: {
+//     _id: string | number
+//     name?: string
+//     avatar?: string | number
+//   }
+//   image?: string
+//   video?: string
+//   audio?: string
+//   system?: boolean
+//   sent?: boolean
+//   received?: boolean
+//   pending?: boolean
+// }
