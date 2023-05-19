@@ -59,12 +59,16 @@ const useChat = (userName: string | null, roomName: string | null) => {
 
     if (!newConnection) return
 
-    newConnection.start().then(() =>
-      newConnection.invoke(ChatHubMethod.JoinRoom, {
-        UserName: userName,
-        RoomName: roomName,
-      }),
-    )
+    try {
+      newConnection.start().then(() =>
+        newConnection.invoke(ChatHubMethod.JoinRoom, {
+          UserName: userName,
+          RoomName: roomName,
+        }),
+      )
+    } catch (error) {
+      console.error('Failed to start connection', error)
+    }
 
     setConnection(newConnection)
 
